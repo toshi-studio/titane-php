@@ -24,8 +24,8 @@ See [API Reference](docs/API/api_reference.md)
 #### Versions
 - **PHP 8.3** – Enables modern syntax and performance.
 - **Apache 2.x** – Stable, widely supported HTTP server.
-- **MariaDB 10.6** – Open-source relational DB with transactional support.
-- **Symfony 7.1.x** – Full-featured PHP framework for scalable, secure APIs.
+- **MariaDB 11.4** – Open-source relational DB with transactional support.
+- **Symfony 7.3.x** – Full-featured PHP framework for scalable, secure APIs.
 - **API Platform 3.3** – Declarative REST/GraphQL API generator with OpenAPI support.
 - **Easy Admin Bundle 4.x** - Symfony recipe to build the admin
 - **SCeditor 3.2.0** - lightweight and configurable WYSIWYG editor

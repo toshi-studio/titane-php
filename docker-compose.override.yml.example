@@ -1,0 +1,38 @@
+# Example override file for local development customizations
+# Copy this to docker-compose.override.yml and modify as needed
+
+version: '3.8'
+
+services:
+  ttn-php:
+    # Mount composer cache for faster dependency installation
+    volumes:
+      - ~/.composer/cache:/home/symfony/.composer/cache
+    # Enable Xdebug for debugging
+    environment:
+      - XDEBUG_MODE=debug
+      - XDEBUG_CONFIG=client_host=host.docker.internal client_port=9003
+
+  ttn-apache:
+    # Custom port bindings
+    ports:
+      - "8000:80"
+      - "8443:443"
+
+  ttn-mariadb:
+    # Custom port for database
+    ports:
+      - "33060:3306"
+    # Mount custom SQL scripts for initialization
+    volumes:
+      - ./docker/mariadb/init:/docker-entrypoint-initdb.d
+
+  # Mailcatcher for development email testing
+  ttn-mailcatcher:
+    image: schickling/mailcatcher
+    container_name: ttn-mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - titane-network

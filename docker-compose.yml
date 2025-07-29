@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # PHP-FPM Service
+  ttn-php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: ttn-php
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./titane:/var/www/html
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+    environment:
+      - PHP_IDE_CONFIG=serverName=titane.local
+    networks:
+      - titane-network
+
+  # Apache Service
+  ttn-apache:
+    build:
+      context: ./docker/apache
+      dockerfile: Dockerfile
+    container_name: ttn-apache
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./titane:/var/www/html
+    depends_on:
+      - ttn-php
+    networks:
+      - titane-network
+
+  # MariaDB Service
+  ttn-mariadb:
+    image: mariadb:11.4.7
+    container_name: ttn-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_DATABASE:-titane}
+      MYSQL_USER: ${DB_USER:-titane}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-titane}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mariadb/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - titane-network
+
+  # phpMyAdmin Service (optional, for development)
+  ttn-phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: ttn-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: ttn-mariadb
+      PMA_USER: ${DB_USER:-titane}
+      PMA_PASSWORD: ${DB_PASSWORD:-titane}
+      UPLOAD_LIMIT: 300M
+    ports:
+      - "8080:80"
+    depends_on:
+      - ttn-mariadb
+    networks:
+      - titane-network
+  # Mailcatcher for development email testing
+  ttn-mailcatcher:
+    image: schickling/mailcatcher
+    container_name: ttn-mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - titane-network
+      
+# Networks
+networks:
+  titane-network:
+    driver: bridge
+    name: titane-network
+
+# Volumes
+volumes:
+  mariadb-data:
+    name: titane-mariadb-data

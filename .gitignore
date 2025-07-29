@@ -1,4 +1,6 @@
-.specstory
+# Specstory
+.specstory/
+
 # Dependencies
 /vendor/
 composer.lock
@@ -23,7 +25,7 @@ composer.lock
 *~
 
 # OS files
-.DS_Store
+**/.DS_Store
 Thumbs.db
 
 # Docker
@@ -57,3 +59,5 @@ docker-compose.override.yml
 /.env.local.php
 /.env.test.local
 /.env.test
+
+# Additional entries (consolidated above)

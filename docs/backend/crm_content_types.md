@@ -67,7 +67,7 @@ Identical to Pages UI.
 
 ---
 
-# Media Library
+## Media Library
 
 Attached per project. Authorized types:
 
@@ -77,7 +77,11 @@ Attached per project. Authorized types:
 
 Limits: 2MB max size. No editing/resizing features.
 
-## UI Table
+### Deletion
+
+Tracking usage of a media can't be done as we provide a public access link. As a result, the deletion must be a confimed action but we can not prevent the loss of access to everyone.
+
+### UI 
 
 * File type icon
 * File name

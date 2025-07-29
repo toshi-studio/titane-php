@@ -32,7 +32,7 @@ Each user has:
 * Password reset via email link. The reset link is temporary (30-minute lifetime) and contains a UID. This UID is validated against a dedicated database table that stores: the UID of the link, its expiration datetime, and the UID of the user. If valid, the user can change their password.
 * JWT-based authentication:
 
-  * Tokens are generated using a public/private key pair.
+  * Tokens are signed using a 4096-bit RSA private key. The key is protected on disk using AES-256 encryption.
   * Token lifetime is set to 1 hour.
   * If the user performs any activity, the token is refreshed automatically every 30 minutes.
   * A "logout" link is available in the backend which invalidates the current JWT.

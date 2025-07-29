@@ -1,0 +1,31 @@
+api_platform:
+    title: Titane API
+    version: 1.0.0
+    description: 'Headless CMS and CRM hybrid API for freelancers and designers'
+    formats:
+        json: ['application/json']
+    docs_formats:
+        jsonopenapi: ['application/vnd.openapi+json']
+        html: ['text/html']
+    defaults:
+        stateless: true
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+        extra_properties:
+            standard_put: true
+            rfc_7807_compliant_errors: false
+        pagination_enabled: true
+        pagination_items_per_page: 30
+        pagination_maximum_items_per_page: 100
+    collection:
+        pagination:
+            items_per_page_parameter_name: 'limit'
+            page_parameter_name: 'page'
+    keep_legacy_inflector: false
+    use_symfony_listeners: true
+    enable_swagger_ui: true
+    enable_re_doc: true
+    enable_entrypoint: false
+    enable_docs: true
+    graphql:
+        enabled: false
