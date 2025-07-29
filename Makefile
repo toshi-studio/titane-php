@@ -52,8 +52,10 @@ clean:
 # Initial setup
 setup: ssl-cert
 	@if [ ! -f .env ]; then cp .env.example .env; echo "Created .env file from .env.example"; fi
-	@echo "Creating titane directory for Symfony project..."
-	@mkdir -p titane
+	@echo "Installing Composer dependencies..."
+	@cd titane && composer install --no-interaction --prefer-dist --optimize-autoloader
+	@echo "Generating JWT keys..."
+	@cd titane && php bin/console lexik:jwt:generate-keypair --skip-if-exists
 	@echo "Setup complete! Run 'make dev' to start the development environment."
 
 # Generate SSL certificates

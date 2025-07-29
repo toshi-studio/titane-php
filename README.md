@@ -36,7 +36,7 @@ See [API Reference](docs/API/api_reference.md)
 ## Getting Started
 ```bash
 git clone git@github.com:toshi-studio/titane-php.git
-cd titane
+make setup # Initial setup (SSL, composer, JWT keys)
 make dev  # or docker compose up --build
 ```
 
