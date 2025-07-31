@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "ref-tools": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-http-proxy", "http://localhost:30003"]
+    },
+    "semgrep": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-http-proxy", "http://localhost:30004"]
+    },
+    "playwright": {
+      "command": "docker",
+      "args": ["exec", "-i", "playwright-mcp", "node", "cli.js"]
+    }
+  }
+}

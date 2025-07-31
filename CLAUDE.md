@@ -46,6 +46,20 @@ Key development commands inside the container:
 php bin/console cache:clear  # Clear Symfony cache
 php bin/console debug:config # Check configuration
 php bin/console about        # Show Symfony version info
+
+# Entity and Database Management
+php bin/console make:entity EntityName                    # Create new Doctrine entity
+php bin/console make:user User --is-entity --with-password # Create User entity with security
+php bin/console make:migration                            # Generate migration from entity changes
+php bin/console doctrine:migrations:migrate               # Apply pending migrations
+php bin/console doctrine:schema:validate                  # Validate schema consistency
+php bin/console doctrine:database:create                  # Create database
+
+# JWT Authentication
+php bin/console lexik:jwt:generate-keypair                # Generate JWT public/private keys
+
+# Debugging and Validation
+php bin/console cache:clear && php bin/console doctrine:schema:validate  # Full validation check
 ```
 
 ## Architecture
@@ -107,6 +121,7 @@ Authentication: JWT tokens (1h lifetime) with automatic 30-minute refresh (to be
 - `/docs/backend/security.md` - User roles and security model
 - `/docs/backend/wysiwyg_tools.md` - Editor configuration
 - `/docs/backend/dashboard.md` - Admin dashboard features
+- `/docs/backend/db_model.md` - Complete database schema with 17 tables and relationships
 
 ## Coding Standards and Principles
 
@@ -145,12 +160,19 @@ When implementing code for this project, you MUST follow:
 - Security configuration completed
 - Development workflow established
 
-**Next Phase: Phase 2 - Core Entities & Database**
-- User & Security entities with JWT authentication
-- Project entity with UID generation
-- Page, Article, Tag entities with version control
-- Form & FormField entities with dynamic fields
-- Media entity with file upload handling
+**Phase 2: COMPLETED ✅** (Core Entities & Database)
+- Database schema implemented with 17 tables (see `/docs/backend/db_model.md`)
+- All Doctrine entities created with proper relationships and validation
+- JWT authentication configured with auto-generated keypair
+- Database migration system established and executed
+- Repository layer enhanced with UID-based methods for API access
+- Full entity documentation with PHPDoc standards
+
+**Current Phase: Phase 3 - Business Logic & API Implementation**
+- API endpoints implementation
+- EasyAdmin CRUD interfaces
+- Authentication and authorization middleware
+- Form handling and validation logic
 
 ## Current Working Directory Structure
 
@@ -158,12 +180,67 @@ When implementing code for this project, you MUST follow:
 titane-php/
 ├── titane/                    # Symfony application root
 │   ├── src/
+│   │   ├── Entity/           # Doctrine entities (15 entities implemented)
+│   │   ├── Repository/       # Repository classes with UID-based API methods
 │   │   └── Controller/Admin/  # EasyAdmin controllers
-│   ├── config/               # Symfony configuration
+│   ├── config/
+│   │   ├── jwt/              # JWT public/private keypair
+│   │   └── packages/         # Bundle configurations
+│   ├── migrations/           # Doctrine database migrations
 │   └── ...
 ├── docker/                   # Docker configuration
 ├── docs/                     # Project documentation
 └── Makefile                  # Development commands
 ```
+
+## Architecture Insights
+
+### Entity Design Patterns
+- **UUID-based External IDs**: All entities use auto-generated UUIDs (`uid` field) for API access, keeping internal database IDs private
+- **Soft Delete Pattern**: Pages and Articles use `isDeleted` flag with `deletedAt` timestamp for trash/recycle functionality
+- **Version Control System**: Pages and Articles maintain full version history (excluding drafts)
+- **Multi-tenancy**: All content is scoped to Projects, enabling isolated multi-site management
+- **Hierarchical Tags**: One-level parent-child relationship for content categorization
+
+### Repository Layer Strategy
+- **Dual Access Methods**: Each repository has both internal ID methods and UID-based methods for API access
+- **API-Ready Queries**: Methods like `findOneByProjectUidAndSlug()` directly support RESTful API endpoints
+- **Security Integration**: Repository methods validate project access and user permissions
+- **Performance Optimization**: Strategic use of query builder joins to minimize database queries
+
+### Data Validation Approach
+- **Entity-Level Validation**: Business rules enforced at entity setter level (roles, statuses, field types)
+- **Database Constraints**: Unique constraints on slug-per-project combinations
+- **Symfony Validation**: UniqueEntity constraints for email and UID uniqueness
+- **Automatic Timestamps**: Doctrine lifecycle callbacks for created/updated tracking
+
+## Common Development Patterns
+
+### Entity Creation Workflow
+1. Use `make:entity` command for basic structure (or `make:user` for User entity)
+2. Manually add business logic, validation, and relationships
+3. Generate migration with `make:migration`
+4. Review generated SQL before applying with `doctrine:migrations:migrate`
+5. Validate with `doctrine:schema:validate`
+
+### Repository Enhancement Pattern
+- Add UID-based methods for each entity that needs API access
+- Follow naming convention: `findByProjectUid()`, `findOneByProjectUidAndSlug()`
+- Include comprehensive PHPDoc documentation
+- Always filter by soft-delete status and publication status for public methods
+
+## Development Gotchas & Tips
+
+### Entity Development
+- **Non-interactive make:entity**: The command requires interactive input - automate with scripts if needed
+- **Migration Review**: Always review generated migrations before applying - Doctrine sometimes generates suboptimal SQL
+- **UUID Generation**: Entities auto-generate UUIDs in constructor using `Symfony\Component\Uid\Uuid`
+- **Relationship Mapping**: Many-to-many junction tables are auto-created (article_tags, media_tags)
+
+### Database Considerations
+- **BIGINT IDs**: All primary keys use BIGINT UNSIGNED for future scalability
+- **Charset Consistency**: All tables use utf8mb4 charset for full Unicode support
+- **Index Strategy**: Foreign keys automatically create indexes; additional indexes added for performance
+- **Migration Safety**: Use `--dry-run` flag to preview migrations before applying
 
 This is a solo developer project where PRs are welcome for documentation improvements, but major design decisions are handled by the maintainer.
