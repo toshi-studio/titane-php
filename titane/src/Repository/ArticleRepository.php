@@ -141,4 +141,34 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Find articles by multiple tag slugs and project UID for API access
+     * 
+     * This method allows filtering published articles by multiple tags using external identifiers.
+     * Returns articles that match ANY of the provided tags (OR logic).
+     * 
+     * @param string $projectUid The project's unique identifier (UUID format)
+     * @param string[] $tagSlugs Array of tag slugs to match against
+     * 
+     * @return Article[] Array of published articles with any of the specified tags
+     */
+    public function findByProjectUidAndTagSlugs(string $projectUid, array $tagSlugs): array
+    {
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.project', 'proj')
+            ->innerJoin('a.tags', 't')
+            ->andWhere('proj.uid = :projectUid')
+            ->andWhere('t.slug IN (:tagSlugs)')
+            ->andWhere('a.status = :status')
+            ->andWhere('a.isDeleted = :deleted')
+            ->setParameter('projectUid', $projectUid)
+            ->setParameter('tagSlugs', $tagSlugs)
+            ->setParameter('status', 'published')
+            ->setParameter('deleted', false)
+            ->groupBy('a.id') // Prevent duplicates when article has multiple matching tags
+            ->orderBy('a.publishedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

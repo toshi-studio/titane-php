@@ -80,39 +80,51 @@
    - Menu structure by role
    - Project switcher implementation
 
-2. **CRUD controllers**
+2. **WYSIWYG Integration (Basic)**
+   - Integrate SCeditor 3.2.0
+   - Basic toolbar configuration (bold, italic, links, etc.)
+   - Configure for BBCode format
+   - Create custom field type for EasyAdmin integration
+   - Test with temporary CRUD controller
+
+3. **CRUD controllers**
    - ProjectCrudController with archive functionality
-   - PageCrudController with version history
-   - ArticleCrudController
+   - PageCrudController with WYSIWYG editor field
+   - ArticleCrudController with WYSIWYG editor field
    - FormCrudController with field builder
    - MediaCrudController with file upload
    - TagCrudController with hierarchy
    - SubscriptionCrudController with filters
 
-3. **Advanced features**
+4. **WYSIWYG Advanced Features**
+   - Custom toolbar configuration per content type (Pages vs Articles)
+   - Create popup forms for BBCode insertion:
+     - Articles tool: Tag selection, sort options, order selection
+     - Article tool: Article slug selection via dropdown/autocomplete
+     - Form tool: Form slug selection via dropdown/autocomplete
+   - BBCode is inserted as plain text (no HTML transformation)
+   - Media library integration for image insertion
+
+5. **Advanced features**
    - Auto-save functionality for Page/Article editors
    - Version rollback interface
    - Trash/restore functionality
    - Bulk operations
-
-4. **WYSIWYG Integration**
-   - Integrate SCeditor 3.2.0
-   - Custom toolbar configuration
-   - Media library integration
-   - Tag insertion for articles
 
 ## Phase 4: API Development
 **Goal**: Implement all API endpoints with API Platform
 
 ### Steps:
 1. **API Resources configuration**
-   - Configure Page API resource (GET /page)
-   - Configure Article API resource (GET /article)
+   - Configure Page API resource (GET /page) - returns structured data with BBCode intact
+   - Configure Article API resource (GET /article) - returns structured data with BBCode intact
    - Configure Form API resources (GET /form, /form_html, POST /form_submit)
+   - Add GET /articles_by_tag endpoint for multi-tag filtering
 
-2. **Custom operations**
-   - HTML content transformation (PHPBB to HTML)
-   - Form HTML rendering
+2. **BBCode Processing Service**
+   - Create service for runtime BBCode to HTML transformation
+   - Frontend/client handles BBCode resolution when rendering content
+   - Ensure dynamic resolution of embedded articles/forms
    - Anti-spam implementation (honeypot + XSS)
 
 3. **API security**
@@ -136,9 +148,10 @@
    - Rollback mechanism
 
 2. **Content services**
-   - PHPBB to HTML converter
+   - BBCode to HTML converter service (for runtime transformation)
    - Summary auto-generation
    - Slug generation with uniqueness
+   - BBCode parser for dynamic article/form resolution
 
 3. **Form services**
    - Form HTML renderer

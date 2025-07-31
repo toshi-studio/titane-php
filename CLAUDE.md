@@ -104,8 +104,9 @@ All API responses will follow this format:
 ```
 
 Key endpoints:
-- `GET /page` - Retrieve page HTML content
-- `GET /article` - Retrieve article HTML content  
+- `GET /page` - Retrieve page structured data (title, slug, body with BBCode not resolved)
+- `GET /article` - Retrieve article structured data (title, slug, tags, body with BBCode not resolved)
+- `GET /articles_by_tag` - Retrieve articles by tags (comma-separated list)
 - `GET /form` - Get form structure
 - `GET /form_html` - Get rendered form HTML
 - `POST /form_submit` - Submit form data
@@ -228,6 +229,7 @@ titane-php/
 - Follow naming convention: `findByProjectUid()`, `findOneByProjectUidAndSlug()`
 - Include comprehensive PHPDoc documentation
 - Always filter by soft-delete status and publication status for public methods
+- Added `findByProjectUidAndTagSlugs()` method to ArticleRepository for multi-tag filtering
 
 ## Development Gotchas & Tips
 
@@ -242,5 +244,26 @@ titane-php/
 - **Charset Consistency**: All tables use utf8mb4 charset for full Unicode support
 - **Index Strategy**: Foreign keys automatically create indexes; additional indexes added for performance
 - **Migration Safety**: Use `--dry-run` flag to preview migrations before applying
+
+### WYSIWYG Editor Architecture
+- **BBCode Storage**: Content is stored with BBCode tags intact (not converted to HTML)
+- **Runtime Resolution**: BBCode to HTML transformation happens at rendering time only
+- **Dynamic Content**: Embedded articles/forms via BBCode always reflect current state
+- **Editor Workflow**: SCEditor popup forms insert BBCode tags, no HTML preview during editing
+
+### API Design Decisions
+- **Structured Data**: API returns structured JSON with BBCode intact, not pre-rendered HTML
+- **Frontend Responsibility**: Client applications handle BBCode to HTML transformation
+- **Content Format**: Body fields contain mixed HTML/BBCode content (HTML from editor, BBCode for embeds)
+
+### Admin UI Features
+- **EasyAdmin Built-ins**: Pagination, sorting, filtering, and search come out-of-the-box
+- **No Additional Libraries**: EasyAdmin provides comprehensive list management features
+- **WYSIWYG Integration Order**: Basic SCEditor setup before CRUD controllers (Phase 3)
+
+### Development Workflow Considerations
+- **No Unsolicited Implementation**: Suggestions are welcome but wait for explicit approval before coding
+- **Phase-based Development**: Follow implementation plan phases strictly
+- **Documentation Updates**: Update docs when architectural decisions are made
 
 This is a solo developer project where PRs are welcome for documentation improvements, but major design decisions are handled by the maintainer.

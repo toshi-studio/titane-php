@@ -26,7 +26,7 @@ All responses follow the same structure:
 
 ### GET `/page`
 
-Returns the HTML content of a page (all PHPBB tags are translated).
+Returns the structured content of a page with BBCode intact for frontend processing.
 
 **Params**: `project_uid`, `page_slug`
 
@@ -36,13 +36,15 @@ Returns the HTML content of a page (all PHPBB tags are translated).
 
 ```json
 {
-    "html": "HTML"
+    "title": "string",
+    "slug": "string", 
+    "body": "string (BBCode not resolved)"
 }
 ```
 
 ### GET `/article`
 
-Returns the HTML content of an article (all PHPBB tags are translated).
+Returns the structured content of an article with BBCode intact for frontend processing.
 
 **Params**: `project_uid`, `article_slug`
 
@@ -52,8 +54,42 @@ Returns the HTML content of an article (all PHPBB tags are translated).
 
 ```json
 {
-    "html": "HTML"
+    "title": "string",
+    "slug": "string",
+    "tags": [
+        {
+            "slug": "string",
+            "name": "string"
+        }
+    ],
+    "body": "string (BBCode  not resolved)"
 }
+```
+
+### GET `/articles_by_tag`
+
+Returns a list of articles that match any of the provided tags.
+
+**Params**: `project_uid`, `tags` (comma-separated tag slugs)
+
+**Returns:** as above
+
+**Data content**:
+
+```json
+[
+    {
+        "title": "string",
+        "slug": "string",
+        "tags": [
+            {
+                "slug": "string", 
+                "name": "string"
+            }
+        ],
+        "body": "string (BBCode not resolved)"
+    }
+]
 ```
 
 ### GET `/form`
