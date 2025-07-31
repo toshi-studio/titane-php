@@ -1,4 +1,4 @@
-# Update CLAUDE.md
+# upd-claude.md
 
 Analyze the current conversation context and recent changes to update the CLAUDE.md file with:
 
